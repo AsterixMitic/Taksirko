@@ -9,4 +9,4 @@ Povratak.init({
   ocekivano_vreme_dolaska: { type: DataTypes.DATE },
   status_voznje: { type: DataTypes.INTEGER },
   cekanje: { type: DataTypes.INTEGER },
-}, { sequelize, tableName: "Povratak" });
+}, { sequelize, tableName: "Povratak" , timestamps: false });

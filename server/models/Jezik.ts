@@ -6,4 +6,4 @@ export class Jezik extends Model {}
 Jezik.init({
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
   ime: { type: DataTypes.STRING(3) },
-}, { sequelize, tableName: "Jezik" });
+}, { sequelize, tableName: "Jezik", timestamps: false });

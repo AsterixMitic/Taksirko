@@ -9,4 +9,4 @@ Lokacija.init({
   naziv: { type: DataTypes.STRING },
   latituda: { type: DataTypes.DECIMAL(7,5) },
   longituda: { type: DataTypes.DECIMAL(8,5) },
-}, { sequelize, tableName: "Lokacija" });
+}, { sequelize, tableName: "Lokacija" , timestamps: false });

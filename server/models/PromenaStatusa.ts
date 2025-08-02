@@ -7,4 +7,4 @@ PromenaStatusa.init({
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
   novi_status_voznje: { type: DataTypes.INTEGER },
   vreme: { type: DataTypes.DATE },
-}, { sequelize, tableName: "PromenaStatusa" });
+}, { sequelize, tableName: "PromenaStatusa" , timestamps: false });

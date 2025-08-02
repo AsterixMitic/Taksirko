@@ -10,4 +10,4 @@ Dispecer.init({
   username: { type: DataTypes.STRING },
   password_hash: { type: DataTypes.STRING },
   broj_telefona: { type: DataTypes.STRING(13) },
-}, { sequelize, tableName: "Dispecer" });
+}, { sequelize, tableName: "Dispecer", timestamps: false });
