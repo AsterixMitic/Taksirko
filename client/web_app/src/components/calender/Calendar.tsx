@@ -9,9 +9,10 @@ import LoadingSpinner from "../common/Loading.tsx";
 interface CalendarProps {
   selectedDay?: Date;
   onDatePress: (date: Date) => void;
+  onMonthLoaded: (monthInfo: MonthInfo) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDatePress }) => {
+const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDatePress, onMonthLoaded }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [monthInfo, setMonthInfo] = useState<MonthInfo | null>(null)
 
@@ -31,8 +32,10 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDatePress }) => {
   }
 
   const load = async () => {
-    const monthInfo = await VoznjaService.GetVoznjeInMonth(currentMonth);
-    setMonthInfo(new MonthInfo(currentMonth, monthInfo));
+    const voznjas = await VoznjaService.GetVoznjeInMonth(currentMonth);
+    const monthInfo = new MonthInfo(currentMonth, voznjas);
+    onMonthLoaded(monthInfo);
+    setMonthInfo(monthInfo);
   }
 
   useEffect(() => {
