@@ -5,6 +5,6 @@ export class PromenaStatusa extends Model {}
 
 PromenaStatusa.init({
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-  novi_status_voznje: { type: DataTypes.INTEGER },
-  vreme: { type: DataTypes.DATE },
-}, { sequelize, tableName: "PromenaStatusa" , timestamps: false });
+  novi_status_voznje: DataTypes.INTEGER,
+  vreme: DataTypes.DATE,
+}, { sequelize, tableName: "PromenaStatusa", timestamps: false });

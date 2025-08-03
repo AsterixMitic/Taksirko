@@ -9,7 +9,6 @@ import { Dispecer } from "./models/Dispecer";
 import { Firma } from "./models/Firma";
 import { Jezik } from "./models/Jezik";
 import { Lokacija } from "./models/Lokacija";
-import { Povratak } from "./models/Povratak";
 import { PromenaStatusa } from "./models/PromenaStatusa";
 
 const app = express();
@@ -33,7 +32,6 @@ sequelize.authenticate()
       Firma.sync(),
       Jezik.sync(),
       Lokacija.sync(),
-      Povratak.sync(),
       PromenaStatusa.sync()
     ]);
   })
@@ -57,7 +55,6 @@ const modelMap: { [key: string]: any } = {
   firme: Firma,
   jezici: Jezik,
   lokacije: Lokacija,
-  povratci: Povratak,
   promene: PromenaStatusa
 };
 

@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS taksirko_db;
 USE taksirko_db;
 
+
 CREATE TABLE IF NOT EXISTS Firma (
     id INT AUTO_INCREMENT PRIMARY KEY,
     naziv VARCHAR(255) NOT NULL,
@@ -21,31 +22,35 @@ CREATE TABLE IF NOT EXISTS Lokacija (
 -- Ime oznacava ISO 639 medjunarodni kod
 CREATE TABLE IF NOT EXISTS Jezik (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ime VARCHAR(3)
+    ime VARCHAR(3) NOT NULL
 );
 
 -- JMBG 13 cifara
 -- Telefon +3816 + 8 cifara = 13 cifara 
 CREATE TABLE IF NOT EXISTS Vozac (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ime VARCHAR(255),
-    prezime VARCHAR(255),
-    jmbg VARCHAR(13),
+    ime VARCHAR(255) NOT NULL ,
+    prezime VARCHAR(255) NOT NULL ,
+    jmbg VARCHAR(13) NOT NULL ,
     slika_url VARCHAR(255),
-    broj_telefona VARCHAR(13)
+    broj_telefona VARCHAR(13) NOT NULL ,
+    username VARCHAR(255) NOT NULL ,
+    password_hash VARCHAR(255) NOT NULL,
+    trenutno_zaposljen BOOLEAN NOT NULL,
+    napomena VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS Vozilo (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    redni_broj INT,
-    registracija VARCHAR(10),
+    redni_broj INT NOT NULL ,
+    registracija VARCHAR(10) NOT NULL ,
     marka VARCHAR(255),
     model VARCHAR(255),
     boja VARCHAR(255),
     karoserija VARCHAR(255),
-    broj_putnika VARCHAR(255),
-    gorivo VARCHAR(255),
-    godiste INT
+    broj_putnika VARCHAR(255) NOT NULL ,
+    gorivo VARCHAR(255) NOT NULL ,
+    godiste INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Putnik (
@@ -57,11 +62,11 @@ CREATE TABLE IF NOT EXISTS Putnik (
 
 CREATE TABLE IF NOT EXISTS Dispecer (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ime VARCHAR(255),
-    prezime VARCHAR(255),
-    username VARCHAR(255),
-    password_hash VARCHAR(255),
-    broj_telefona VARCHAR(13)
+    ime VARCHAR(255) NOT NULL ,
+    prezime VARCHAR(255) NOT NULL ,
+    username VARCHAR(255) NOT NULL ,
+    password_hash VARCHAR(255) NOT NULL ,
+    broj_telefona VARCHAR(13) NOT NULL
 );
 
 -- Statusi za status_voznje
@@ -74,31 +79,45 @@ CREATE TABLE IF NOT EXISTS Dispecer (
 -- Mala izmena status -> status_voznje zbog keyworda
 CREATE TABLE IF NOT EXISTS Voznja (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    pocetna_lokacija_id INT,
-    krajnja_lokacija_id INT,
-    vreme_pocetka DATETIME,
+    pocetna_lokacija_id INT NOT NULL,
+    krajnja_lokacija_id INT NOT NULL,
+    vreme_pocetka DATETIME NOT NULL,
     ocekivano_vreme_dolaska DATETIME,
     cena DECIMAL(10,2),
     nacin_placanja VARCHAR(255),
     trazeni_jezik_id INT,
     broj_leta VARCHAR(6),
     napomena VARCHAR(255),
-    status_voznje INT,
+    recenzija VARCHAR(255),
+    status_voznje INT NOT NULL ,
+    povratak BOOLEAN NOT NULL ,
+    cekanje VARCHAR(255),
+    vozac_id INT NOT NULL ,
+    vozilo_id INT NOT NULL ,
+    FOREIGN KEY (vozilo_id) REFERENCES Vozilo(id),
+    FOREIGN KEY (vozac_id) REFERENCES Vozac(id),
     FOREIGN KEY (pocetna_lokacija_id) REFERENCES Lokacija(id),
     FOREIGN KEY (krajnja_lokacija_id) REFERENCES Lokacija(id),
     FOREIGN KEY (trazeni_jezik_id) REFERENCES Jezik(id)
-);
-
-CREATE TABLE IF NOT EXISTS Povratak (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    vreme_pocetka DATETIME,
-    ocekivano_vreme_dolaska DATETIME,
-    status_voznje INT,
-    cekanje INT
 );
 
 CREATE TABLE IF NOT EXISTS PromenaStatusa (
     id INT AUTO_INCREMENT PRIMARY KEY,
     novi_status_voznje INT,
     vreme DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS Admin(
+    id INT AUTO_INCREMENT PRIMARY KEY ,
+    username VARCHAR(255) NOT NULL ,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE  IF NOT EXISTS Odsustvo(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vozac_id INT NOT NULL,
+    pocetni_datum DATE NOT NULL,
+    krajnji_datum DATE,
+    razlog_odsustva VARCHAR(255) NOT NULL,
+    FOREIGN KEY (vozac_id) REFERENCES Vozac(id)
 );

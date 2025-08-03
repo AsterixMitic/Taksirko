@@ -1,66 +1,15 @@
-export type Vozac = {
+export type Firma = {
   id: number;
-  ime: string;
-  prezime: string;
-  jmbg: string;
-  slika_url: string;
-  broj_telefona: string;
-};
-
-export type Vozilo = {
-  id: number;
-  redni_broj: number;
-  registracija: string;
-  marka: string;
-  model: string;
-  boja: string;
-  karoserija: string;
-  broj_putnika: string;
-  gorivo: string;
-  godiste: number;
-};
-
-export type Voznja = {
-  id: number;
-  pocetna_lokacija_id: number;
-  krajnja_lokacija_id: number;
-  vreme_pocetka: string; // u frontend-u obično koristimo string za Date
-  ocekivano_vreme_dolaska: string;
-  cena: string; // decimal u backendu, u frontend može biti string ili number, zavisi
-  nacin_placanja: string;
-  trazeni_jezik_id: number;
-  broj_leta: string;
-  napomena: string;
-  status_voznje: number;
-};
-
-export type Putnik = {
-  id: number;
-  ime: string;
-  prezime: string;
-  broj_telefona: string;
-};
-
-export type PromenaStatusa = {
-  id: number;
-  novi_status_voznje: number;
-  vreme: string;
-};
-
-export type Povratak = {
-  id: number;
-  vreme_pocetka: string;
-  ocekivano_vreme_dolaska: string;
-  status_voznje: number;
-  cekanje: number;
+  naziv: string;
+  pib: string;
 };
 
 export type Lokacija = {
   id: number;
-  adresa: string;
-  naziv: string;
-  latituda: number;   // decimal(7,5) -> number
-  longituda: number;  // decimal(8,5) -> number
+  adresa?: string;
+  naziv?: string;
+  latituda?: number;
+  longituda?: number;
 };
 
 export type Jezik = {
@@ -68,10 +17,37 @@ export type Jezik = {
   ime: string;
 };
 
-export type Firma = {
+export type Vozac = {
   id: number;
-  naziv: string;
-  pib: string;
+  ime: string;
+  prezime: string;
+  jmbg: string;
+  slika_url?: string;
+  broj_telefona: string;
+  username: string;
+  password_hash: string;
+  trenutno_zaposljen: boolean;
+  napomena?: string;
+};
+
+export type Vozilo = {
+  id: number;
+  redni_broj: number;
+  registracija: string;
+  marka?: string;
+  model?: string;
+  boja?: string;
+  karoserija?: string;
+  broj_putnika: string;
+  gorivo: string;
+  godiste: number;
+};
+
+export type Putnik = {
+  id: number;
+  ime?: string;
+  prezime?: string;
+  broj_telefona?: string;
 };
 
 export type Dispecer = {
@@ -81,4 +57,43 @@ export type Dispecer = {
   username: string;
   password_hash: string;
   broj_telefona: string;
+};
+
+export type Voznja = {
+  id: number;
+  pocetna_lokacija_id: number;
+  krajnja_lokacija_id: number;
+  vreme_pocetka: string; // ISO string
+  ocekivano_vreme_dolaska?: string;
+  cena?: number;
+  nacin_placanja?: string;
+  trazeni_jezik_id?: number;
+  broj_leta?: string;
+  napomena?: string;
+  recenzija?: string;
+  status_voznje: number;
+  povratak: boolean;
+  cekanje?: string;
+  vozac_id: number;
+  vozilo_id: number;
+};
+
+export type PromenaStatusa = {
+  id: number;
+  novi_status_voznje: number;
+  vreme: string; // ISO string
+};
+
+export type Admin = {
+  id: number;
+  username: string;
+  password_hash: string;
+};
+
+export type Odsustvo = {
+  id: number;
+  vozac_id: number;
+  pocetni_datum: string; // yyyy-mm-dd
+  krajnji_datum?: string;
+  razlog_odsustva: string;
 };
