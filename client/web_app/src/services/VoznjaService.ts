@@ -10,6 +10,13 @@ export default class VoznjaService {
     const voznjeInMonth = response.filter(v => isSameMonth(new Date(v.vreme_pocetka), month));
     return voznjeInMonth;
   }
+
+  public static async GetVoznjeInDay(month: Date) {
+    const voznjaCrud = CrudFactory.GetVoznjaService();
+    const response = await voznjaCrud.GetAll(); // TODO: Coa da napravi endpoint samo za mesec
+    const voznjeInMonth = response.filter(v => isSameDay(new Date(v.vreme_pocetka), month));
+    return voznjeInMonth;
+  }
 }
 
 export class MonthInfo {

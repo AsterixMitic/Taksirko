@@ -1,12 +1,13 @@
 import {type ReactElement, useEffect, useState} from "react";
-import LoadingSpinner from "./Loading.tsx";
+import LoadingSpinner, {LoadingSpinnerInline} from "./Loading.tsx";
 
 interface Props<Model> {
   loadModel: () => Promise<Model>;
   render: (m: Model) => ReactElement;
+  inline?: true;
 }
 
-function LoadAsync<Model>({render, loadModel}: Props<Model>) {
+function LoadAsync<Model>({render, loadModel, inline}: Props<Model>) {
   const [model, setModel] = useState<Model | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -31,7 +32,11 @@ function LoadAsync<Model>({render, loadModel}: Props<Model>) {
 
   return (
     <>
-      {loading && <LoadingSpinner/>}
+      {loading && (
+        <>
+          { inline ? <LoadingSpinnerInline/> : <LoadingSpinner/>}
+        </>
+      )}
       {error && (<div className="alert alert-danger">Greška</div>)}
       {model && render(model)}
     </>

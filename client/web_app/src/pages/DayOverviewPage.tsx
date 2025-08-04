@@ -5,6 +5,7 @@ import VoznjaPreview from "../components/models/voznja/VoznjaPreview.tsx";
 import {useState} from "react";
 import LoadAsync from "../components/common/LoadAsync.tsx";
 import VoznjaService from "../services/VoznjaService.ts";
+import {format} from "date-fns";
 
 interface Props {
 }
@@ -12,6 +13,7 @@ interface Props {
 
 const DayOverviewPage = ({}: Props) => {
     const { datum } = useParams<{ datum: string }>();
+    const [formatDate, setFormatDate] = useState<string | undefined>(datum);
 
     const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +30,9 @@ const DayOverviewPage = ({}: Props) => {
             return[];
         }
 
-        const voznje = await VoznjaService.GetVoznjeInMonth(date)
+        setFormatDate(format(date, "dd.MM.yyyy"));
+
+        const voznje = await VoznjaService.GetVoznjeInDay(date)
         return voznje;
     }
 
@@ -38,16 +42,16 @@ const DayOverviewPage = ({}: Props) => {
 
     return (
         <div className="container mt-5">
-            <h2>Voznje za datum: {datum}</h2>
+            <h2>Voznje za datum: {formatDate}</h2>
             <LoadAsync<Voznja[]> loadModel={loadVoznje} render={(voznje) => {
                 return (
-                  <ul className="list-group">
+                  <div className="d-flex flex-row flex-wrap">
                       {voznje.map(v => (
-                        <li key={v.id} className="list-group-item">
+                        <div key={v.id} style={{marginLeft: "20px"}}>
                             <VoznjaPreview voznja={v} />
-                        </li>
+                        </div>
                       ))}
-                  </ul>
+                  </div>
                 )
             }}/>
         </div>

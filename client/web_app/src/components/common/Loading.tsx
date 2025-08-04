@@ -10,4 +10,13 @@ const LoadingSpinner: React.FC = () => {
   );
 };
 
+const LoadingSpinnerInline: React.FC = () => {
+  return (
+    <div style={{ display: "inline-block", marginLeft: "8px" }}>
+      <div className="spinner-border spinner-border-sm text-primary" role="status" />
+    </div>
+  );
+};
+
+export { LoadingSpinnerInline };
 export default LoadingSpinner;
