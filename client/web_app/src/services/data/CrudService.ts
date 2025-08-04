@@ -1,5 +1,16 @@
 import ApiService from "./ApiService.ts";
-import type {Putnik, Vozac, Vozilo, Voznja} from "../../types.ts";
+import type {
+  Admin,
+  Dispecer,
+  Firma,
+  Jezik,
+  Lokacija, Odsustvo,
+  PromenaStatusa,
+  Putnik,
+  Vozac,
+  Vozilo,
+  Voznja
+} from "../../types.ts";
 
 export default class CrudService<Model> {
 
@@ -40,24 +51,24 @@ export class CrudFactory {
     return new CrudService<Voznja>("voznje");
   }
   public static GetLokacijeService() {
-    return new CrudService<Voznja>("lokacije");
+    return new CrudService<Lokacija>("lokacije");
   }
   public static GetFirmeService() {
-    return new CrudService<Voznja>("firme");
+    return new CrudService<Firma>("firme");
   }
   public static GetJeziciService() {
-    return new CrudService<Voznja>("jezici");
+    return new CrudService<Jezik>("jezici");
   }
   public static GetDispeceriService() {
-    return new CrudService<Voznja>("dispeceri");
+    return new CrudService<Dispecer>("dispeceri");
   }
   public static GetPromeneStatusaService() {
-    return new CrudService<Voznja>("promene");
+    return new CrudService<PromenaStatusa>("promene");
   }
   public static GetAdminiService() {
-    return new CrudService<Voznja>("admini");
+    return new CrudService<Admin>("admini");
   }
   public static GetOdsustvaService() {
-    return new CrudService<Voznja>("odsustva");
+    return new CrudService<Odsustvo>("odsustva");
   }
 }
