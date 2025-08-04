@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import cors from "cors";
 import dotenv from "dotenv";
 import { sequelize } from "./repository/db";
 import { Putnik } from "./models/Putnik";
@@ -15,6 +16,8 @@ const app = express();
 const port = 3000;
 
 dotenv.config();
+
+app.use(cors())
 
 app.use(express.json());
 
