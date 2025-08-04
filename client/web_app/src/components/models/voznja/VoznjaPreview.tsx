@@ -3,6 +3,7 @@ import type {Lokacija, Vozac, Vozilo, Voznja} from '../../../types.ts';
 import {CrudFactory} from "../../../services/data/CrudService.ts";
 import {format} from "date-fns";
 import {MapStatusToName} from "../../../services/StatusService.ts";
+import LoadingSpinner from "../../common/Loading.tsx";
 
 interface VoznjaCardProps {
     voznja: Voznja;
@@ -62,11 +63,11 @@ const VoznjaCard: React.FC<VoznjaCardProps> = ({ voznja }) => {
                 <h5 className="card-title">Voznja #{voznja.id}</h5>
                 <p className="card-text">
                     <strong>Datum:</strong> {format(new Date(voznja.vreme_pocetka), 'hh:mm')}<br />
-                    <strong>Vozac:</strong> {vozac ? `${vozac.ime} ${vozac.prezime}`: "loading"}<br />
-                    <strong>Vozilo:</strong> {vozilo ? `${vozilo.registracija} ${vozilo.marka} ${vozilo.model}`: "loading"}<br />
+                    <strong>Vozac:</strong> {vozac ? `${vozac.ime} ${vozac.prezime}`: <LoadingSpinner/>}<br />
+                    <strong>Vozilo:</strong> {vozilo ? `${vozilo.registracija} ${vozilo.marka} ${vozilo.model}`: <LoadingSpinner/>}<br />
                     <strong>Status:</strong> {MapStatusToName(voznja.status_voznje)}<br />
-                    <strong>Pocetna lokacija:</strong> {pocetnaLokacija ? pocetnaLokacija.adresa ? pocetnaLokacija.adresa : pocetnaLokacija.naziv : "loading"}<br />
-                    <strong>Zavrsna lokacija:</strong> {krajnjaLokacija ? krajnjaLokacija.adresa ? krajnjaLokacija.adresa : krajnjaLokacija.naziv : "loading"}<br />
+                    <strong>Pocetna lokacija:</strong> {pocetnaLokacija ? pocetnaLokacija.adresa ? pocetnaLokacija.adresa : pocetnaLokacija.naziv : <LoadingSpinner/>}<br />
+                    <strong>Zavrsna lokacija:</strong> {krajnjaLokacija ? krajnjaLokacija.adresa ? krajnjaLokacija.adresa : krajnjaLokacija.naziv : <LoadingSpinner/>}<br />
                 </p>
             </div>
         </div>
