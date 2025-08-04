@@ -28,7 +28,7 @@ function LoadAsync<Model>({render, loadModel, inline}: Props<Model>) {
     }
 
     load()
-  })
+  }, [])
 
   return (
     <>
