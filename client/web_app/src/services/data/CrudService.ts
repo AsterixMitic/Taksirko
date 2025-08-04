@@ -39,4 +39,25 @@ export class CrudFactory {
   public static GetVoznjaService() {
     return new CrudService<Voznja>("voznje");
   }
+  public static GetLokacijeService() {
+    return new CrudService<Voznja>("lokacije");
+  }
+  public static GetFirmeService() {
+    return new CrudService<Voznja>("firme");
+  }
+  public static GetJeziciService() {
+    return new CrudService<Voznja>("jezici");
+  }
+  public static GetDispeceriService() {
+    return new CrudService<Voznja>("dispeceri");
+  }
+  public static GetPromeneStatusaService() {
+    return new CrudService<Voznja>("promene");
+  }
+  public static GetAdminiService() {
+    return new CrudService<Voznja>("admini");
+  }
+  public static GetOdsustvaService() {
+    return new CrudService<Voznja>("odsustva");
+  }
 }
