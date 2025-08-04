@@ -1,36 +1,57 @@
 // src/pages/VoznjeZaDatum.tsx
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import VoznjaService from "../services/VoznjaService.ts";
 import type { Voznja } from "../types.ts";
-import VoznjaCard from "../components/models/voznja/VoznjaPreview.tsx";
-import dayPreview from "../components/calender/DayPreview.tsx";
+import VoznjaPreview from "../components/models/voznja/VoznjaPreview.tsx";
+import {useState} from "react";
+import LoadAsync from "../components/common/LoadAsync.tsx";
+import VoznjaService from "../services/VoznjaService.ts";
 
 interface Props {
-    voznje: Voznja[];
 }
 
 
-const VoznjeZaDatum = ({voznje}: Props) => {
+const DayOverviewPage = ({}: Props) => {
     const { datum } = useParams<{ datum: string }>();
 
+    const [error, setError] = useState<string | null>(null);
+
+    const loadVoznje = async (): Promise<Voznja[]> => {
+        if (!datum) {
+            setError("Datum nije definisan u URL-u");
+            return[];
+        }
+
+        const date = new Date(datum); // Konverzija iz stringa u Date
+
+        if (isNaN(date.getTime())) {
+            setError("Nevalidan datum u URL-u: " + datum);
+            return[];
+        }
+
+        const voznje = await VoznjaService.GetVoznjeInMonth(date)
+        return voznje;
+    }
+
+    if (error) {
+        return <div className="alert alert-danger">{error}</div>
+    }
 
     return (
         <div className="container mt-5">
             <h2>Voznje za datum: {datum}</h2>
-            {voznje.length === 0 ? (
-                <p>Nema vožnji za izabrani dan.</p>
-            ) : (
-                <ul className="list-group">
-                    {voznje.map(v => (
+            <LoadAsync<Voznja[]> loadModel={loadVoznje} render={(voznje) => {
+                return (
+                  <ul className="list-group">
+                      {voznje.map(v => (
                         <li key={v.id} className="list-group-item">
-                            <VoznjaCard voznja={v} />
+                            <VoznjaPreview voznja={v} />
                         </li>
-                    ))}
-                </ul>
-            )}
+                      ))}
+                  </ul>
+                )
+            }}/>
         </div>
     );
 };
 
-export default VoznjeZaDatum;
+export default DayOverviewPage;

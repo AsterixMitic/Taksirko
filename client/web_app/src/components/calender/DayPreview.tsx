@@ -10,12 +10,12 @@ function DayPreview({date, voznje}: Props) {
 
   return (
     <div className="d-flex flex-column" style={{minHeight: "70px"}}>
-      <div className="fs-4">
+      <div className="fs-5">
         {format(date, "d")}
       </div>
       {voznje.length > 0 && (
-        <div className="card bg-warning">
-          Vožnje: {voznje.length}
+        <div className="card bg-danger p-1">
+          V: {voznje.length}
         </div>
       )}
     </div>

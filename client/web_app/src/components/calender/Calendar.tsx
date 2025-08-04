@@ -94,7 +94,9 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDatePress, onMonthLo
         days.push(
           <div key={day.toString()} className="col p-1">
             <button
-              className={`btn w-100 ${isSelected ? "btn-primary" : isCurrentMonth ? "btn-outline-secondary" : "btn-outline-light text-muted"}`}
+              disabled={!isCurrentMonth}
+              className={`btn w-100 ${isSelected ? "btn-primary" : isCurrentMonth ? "btn-outline-light" : "btn-outline-primary"}`}
+              style={{minHeight: "90px"}}
               onClick={() => onDatePress(currentDay)}
             >
               <DayPreview date={currentDay} voznje={getVoznjeInDay(currentDay)}/>
@@ -115,7 +117,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDatePress, onMonthLo
   };
 
   return (
-    <div className="container border p-3 rounded shadow-sm" style={{maxWidth: "800px"}}>
+    <div className="container card border p-3 rounded shadow-sm" style={{maxWidth: "1000px"}}>
       {renderHeader()}
       {renderDays()}
       {renderCells()}

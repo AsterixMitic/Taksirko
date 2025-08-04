@@ -6,12 +6,16 @@ import {CrudFactory} from "./services/data/CrudService.ts";
 import VoziloDetails from "./components/models/vozilo/VoziloDetails.tsx";
 import {MonthInfo} from "./services/VoznjaService.ts";
 import DayOverview from "./components/calender/DayOverview.tsx";
+import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 function App() {
   const [selected, setSelected] = useState<Date>(new Date());
 
   const [vozila, setVozila] = useState<Vozilo[]>([])
   const [monthInfo, setMonthInfo] = useState<MonthInfo>(new MonthInfo(new Date(), []));
+
+  const navigate = useNavigate();
 
   const VoziloCrud = CrudFactory.GetVoziloService();
 
@@ -23,12 +27,17 @@ function App() {
     load()
   })
 
+  const onDatePress = (date: Date) => {
+    const formatted = format(date, 'yyyy-MM-dd');
+    navigate(`/dispecer/day/${formatted}`)
+  }
+
   return (
     <>
       <div className="container mt-5">
         <Calendar
           selectedDay = {selected}
-          onDatePress = {(date) => setSelected(date)}
+          onDatePress = {onDatePress}
           onMonthLoaded = {(monthInfo) => setMonthInfo(monthInfo)}
         />
       </div>
