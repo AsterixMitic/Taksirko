@@ -6,14 +6,16 @@ import App from './App.tsx'
 import 'bootswatch/dist/quartz/bootstrap.min.css';
 
 import DayOverviewPage from './pages/DayOverviewPage.tsx';
+import VoznjaOverviewPage from "./pages/VoznjaOverviewPage.tsx";
 
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<App />} />
-                <Route path="/dispecer/day/:datum" element={<DayOverviewPage />} />
+              <Route path="/" element={<App />} />
+              <Route path="/dispecer/day/:datum" element={<DayOverviewPage />} />
+              <Route path="/dispecer/voznja/:voznja_id" element={<VoznjaOverviewPage />} />
             </Routes>
         </BrowserRouter>
     </StrictMode>

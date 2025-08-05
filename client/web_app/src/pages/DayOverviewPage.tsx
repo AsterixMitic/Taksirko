@@ -1,5 +1,5 @@
 // src/pages/VoznjeZaDatum.tsx
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import type { Voznja } from "../types.ts";
 import VoznjaPreview from "../components/models/voznja/VoznjaPreview.tsx";
 import {useState} from "react";
@@ -16,6 +16,8 @@ const DayOverviewPage = ({}: Props) => {
     const [formatDate, setFormatDate] = useState<string | undefined>(datum);
 
     const [error, setError] = useState<string | null>(null);
+
+    const navigate = useNavigate();
 
     const loadVoznje = async (): Promise<Voznja[]> => {
         if (!datum) {
@@ -47,7 +49,11 @@ const DayOverviewPage = ({}: Props) => {
                 return (
                   <div className="d-flex flex-row flex-wrap">
                       {voznje.map(v => (
-                        <div key={v.id} style={{marginLeft: "20px"}}>
+                        <div key={v.id}
+                             style={{marginLeft: "20px", cursor: "pointer"}}
+                             onClick={() => {navigate(`/dispecer/voznja/${v.id}`)
+                        }}
+                        >
                             <VoznjaPreview voznja={v} />
                         </div>
                       ))}
