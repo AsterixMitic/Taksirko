@@ -11,39 +11,19 @@ interface VoznjaCardProps {
 
 
 const VoznjaPreview: React.FC<VoznjaCardProps> = ({ voznja }) => {
-    //const [vozac, setVozac] = useState<Vozac | null>(null);
-    //const [vozilo, setVozilo] = useState<Vozilo | null>(null);
-    //const [pocetnaLokacija, setPocetnaLokacija] = useState<Lokacija | null>(null);
-    //const [krajnjaLokacija, setKrajnjaLokacija] = useState<Lokacija | null>(null);
 
 
-    const fetchVozac = async () => {
-        const vozacService=CrudFactory.GetVozaciService()
-        const response = await vozacService.GetOne(voznja.vozac_id);
-        return response;
-    };
+    const vozacService=CrudFactory.GetVozaciService()
+    const voziloService=CrudFactory.GetVoziloService()
+    const lokacijaService=CrudFactory.GetLokacijeService()
 
-    const fetchVozilo = async () => {
-        const voziloService=CrudFactory.GetVoziloService()
-        const response = await voziloService.GetOne(voznja.vozilo_id);
-        return response;
-    };
+    const fetchVozac = async () => await vozacService.GetOne(voznja.vozac_id);
 
-    const fetchLokacija1 = async () => {
-        const LokacijaService=CrudFactory.GetLokacijeService()
+    const fetchVozilo = async () => await voziloService.GetOne(voznja.vozilo_id);
 
-        const response1 = await LokacijaService.GetOne(voznja.pocetna_lokacija_id);
-        return response1
+    const fetchLokacija1 = async () => await lokacijaService.GetOne(voznja.pocetna_lokacija_id);
 
-    };
-
-    const fetchLokacija2 = async () => {
-        const LokacijaService=CrudFactory.GetLokacijeService()
-
-        const response2 = await LokacijaService.GetOne(voznja.krajnja_lokacija_id);
-        return response2
-
-    };
+    const fetchLokacija2 = async () => await lokacijaService.GetOne(voznja.krajnja_lokacija_id);
 
 
 

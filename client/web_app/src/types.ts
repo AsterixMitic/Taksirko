@@ -61,21 +61,21 @@ export type Dispecer = {
 
 export type Voznja = {
   id: number;
-  pocetna_lokacija_id: number;
-  krajnja_lokacija_id: number;
+  pocetna_lokacija_id: number; //
+  krajnja_lokacija_id: number; //
   vreme_pocetka: string; // ISO string
-  ocekivano_vreme_dolaska?: string;
-  cena?: number;
-  nacin_placanja?: string;
-  trazeni_jezik_id?: number;
-  broj_leta?: string;
+  ocekivano_vreme_dolaska?: string; //
+  cena?: number; //
+  nacin_placanja?: string; //
+  trazeni_jezik_id?: number;  //
+  broj_leta?: string; //
   napomena?: string;
   recenzija?: string;
-  status_voznje: number;
-  povratak: boolean;
-  cekanje?: string;
-  vozac_id: number;
-  vozilo_id: number;
+  status_voznje: number; //
+  povratak: boolean; //
+  cekanje?: string; //
+  vozac_id: number; //
+  vozilo_id: number; //
 };
 
 export type PromenaStatusa = {
