@@ -26,7 +26,7 @@ export default class CrudService<Model> {
   public async GetOne(id: number): Promise<Model> {
     return ApiService.get<Model>(`${this.endpoint}/${id}`);
   }
-  public async Post(data: Model): Promise<Model> {
+  public async Create(data: Model): Promise<Model> {
     return ApiService.post<Model>(`${this.endpoint}`, data);
   }
   public async Put(id: number, data: Model): Promise<Model> {
@@ -44,10 +44,10 @@ export class CrudFactory {
   public static GetVozaciService() {
     return new CrudService<Vozac>("vozaci");
   }
-  public static GetVoziloService() {
+  public static GetVozilaService() {
     return new CrudService<Vozilo>("vozila");
   }
-  public static GetVoznjaService() {
+  public static GetVoznjeService() {
     return new CrudService<Voznja>("voznje");
   }
   public static GetLokacijeService() {

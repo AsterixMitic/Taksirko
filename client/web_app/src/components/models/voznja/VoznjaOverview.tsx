@@ -13,7 +13,7 @@ function VoznjaOverview({voznja}: Props) {
 
 
   const vozacService=CrudFactory.GetVozaciService()
-  const voziloService=CrudFactory.GetVoziloService()
+  const voziloService=CrudFactory.GetVozilaService()
   const lokacijaService=CrudFactory.GetLokacijeService()
   const jezikService=CrudFactory.GetJeziciService()
 

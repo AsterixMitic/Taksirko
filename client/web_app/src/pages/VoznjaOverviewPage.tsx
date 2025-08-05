@@ -17,7 +17,7 @@ function VoznjaOverviewPage() {
 
     try{
       const voznja_id_num = Number(voznja_id);
-      const VoznjaService = CrudFactory.GetVoznjaService();
+      const VoznjaService = CrudFactory.GetVoznjeService();
       const response = await VoznjaService.GetOne(voznja_id_num);
 
       setVoznja(response);

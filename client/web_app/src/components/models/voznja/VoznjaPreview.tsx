@@ -14,7 +14,7 @@ const VoznjaPreview: React.FC<VoznjaCardProps> = ({ voznja }) => {
 
 
     const vozacService=CrudFactory.GetVozaciService()
-    const voziloService=CrudFactory.GetVoziloService()
+    const voziloService=CrudFactory.GetVozilaService()
     const lokacijaService=CrudFactory.GetLokacijeService()
 
     const fetchVozac = async () => await vozacService.GetOne(voznja.vozac_id);
