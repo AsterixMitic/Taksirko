@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CrudFactory } from "../../../services/data/CrudService.ts";
 import { useNavigate } from "react-router-dom";
 import type { Jezik, Lokacija, Vozac, Vozilo, Voznja } from "../../../types.ts";
+import {nazivJezikaNaSrpskom} from "../../../services/JezikService.ts";
 
 function NovaVoznjaForm() {
     const [formData, setFormData] = useState<Partial<Voznja>>({});
@@ -64,7 +65,7 @@ function NovaVoznjaForm() {
                     <select name="vozilo_id" onChange={handleChange} className="form-select">
                         <option value="">Izaberi vozilo</option>
                         {vozila.map(v => (
-                            <option key={v.id} value={v.id}>{v.registracija}</option>
+                            <option key={v.id} value={v.id}>Br. {v.redni_broj} - {v.registracija} - {v.marka} {v.model}</option>
                         ))}
                     </select>
                 </div>
@@ -84,7 +85,7 @@ function NovaVoznjaForm() {
                     <select name="pocetna_lokacija_id" onChange={handleChange} className="form-select">
                         <option value="">Izaberi</option>
                         {lokacije.map(l => (
-                            <option key={l.id} value={l.id}>{l.adresa || l.naziv}</option>
+                            <option key={l.id} value={l.id}>{l.naziv || l.adresa}</option>
                         ))}
                     </select>
                 </div>
@@ -94,7 +95,7 @@ function NovaVoznjaForm() {
                     <select name="krajnja_lokacija_id" onChange={handleChange} className="form-select">
                         <option value="">Izaberi</option>
                         {lokacije.map(l => (
-                            <option key={l.id} value={l.id}>{l.adresa || l.naziv}</option>
+                            <option key={l.id} value={l.id}>{l.naziv || l.adresa}</option>
                         ))}
                     </select>
                 </div>
@@ -104,7 +105,7 @@ function NovaVoznjaForm() {
                     <select name="trazeni_jezik_id" onChange={handleChange} className="form-select">
                         <option value="">Bez jezika</option>
                         {jezici.map(j => (
-                            <option key={j.id} value={j.id}>{j.ime}</option>
+                            <option key={j.id} value={j.id}>{nazivJezikaNaSrpskom(j.ime)}</option>
                         ))}
                     </select>
                 </div>
@@ -130,7 +131,7 @@ function NovaVoznjaForm() {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label">Čekanje (min)</label>
+                    <label className="form-label">Čekanje (h)</label>
                     <input type="number" name="cekanje" onChange={handleChange} className="form-control" />
                 </div>
 

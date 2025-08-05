@@ -37,7 +37,7 @@ function VoznjaOverviewPage() {
   }, []);
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-3" style={{maxWidth: "800px"}}>
       {loading && (<LoadingSpinner/>)}
       {error && (<div className="alert alert-danger">{error}</div>)}
       {voznja && (

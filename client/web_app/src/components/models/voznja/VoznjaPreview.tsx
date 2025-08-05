@@ -64,7 +64,7 @@ const VoznjaPreview: React.FC<VoznjaCardProps> = ({ voznja }) => {
                         <strong>Pocetna lokacija: </strong>
                         <LoadAsync<Lokacija> inline={true} loadModel={fetchLokacija1} render={(pocetnaLokacija) => (
                             <>
-                                {pocetnaLokacija.adresa ? pocetnaLokacija.adresa : pocetnaLokacija.naziv}
+                                {pocetnaLokacija.naziv ? pocetnaLokacija.naziv : pocetnaLokacija.adresa}
                             </>
                         )}/>
                     </div>
@@ -73,7 +73,7 @@ const VoznjaPreview: React.FC<VoznjaCardProps> = ({ voznja }) => {
                         <strong>Zavrsna lokacija: </strong>
                         <LoadAsync<Lokacija> inline={true} loadModel={fetchLokacija2} render={(krajnjaLokacija) => (
                             <>
-                                {krajnjaLokacija.adresa ? krajnjaLokacija.adresa : krajnjaLokacija.naziv}
+                                {krajnjaLokacija.naziv ? krajnjaLokacija.naziv : krajnjaLokacija.adresa}
                             </>
                         )}/>
                     </div>

@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Lokacija (
     longituda DECIMAL(10,5)
 );
 
--- Ime oznacava ISO 639 medjunarodni kod
+-- Ime oznacava ISO 639-2 medjunarodni kod
 CREATE TABLE IF NOT EXISTS Jezik (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ime VARCHAR(3) NOT NULL
