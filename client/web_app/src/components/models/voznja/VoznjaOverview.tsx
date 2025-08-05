@@ -3,6 +3,13 @@ import {format} from "date-fns";
 import {CrudFactory} from "../../../services/data/CrudService.ts";
 import LoadAsync from "../../common/LoadAsync.tsx";
 import {MapStatusToName} from "../../../services/StatusService.ts";
+import {useState} from "react";
+import PopUpWindow from "../../common/PopUpWindow.tsx";
+import LokacijaOverview from "../lokacija/LokacijaOverview.tsx";
+import VoziloDetails from "../vozilo/VoziloDetails.tsx";
+import VozacDetails from "../vozac/VozacDetails.tsx";
+import CardListItem from "../../common/CardListItem.tsx";
+import {nazivJezikaNaSrpskom} from "../../../services/JezikService.ts";
 
 interface Props{
   voznja: Voznja
@@ -11,130 +18,145 @@ interface Props{
 
 function VoznjaOverview({voznja}: Props) {
 
-
   const vozacService=CrudFactory.GetVozaciService()
   const voziloService=CrudFactory.GetVozilaService()
   const lokacijaService=CrudFactory.GetLokacijeService()
   const jezikService=CrudFactory.GetJeziciService()
 
-
   const fetchVozac = async () => await vozacService.GetOne(voznja.vozac_id);
-
   const fetchVozilo = async () => await voziloService.GetOne(voznja.vozilo_id);
-
   const fetchLokacija1 = async () => await lokacijaService.GetOne(voznja.pocetna_lokacija_id);
-
   const fetchLokacija2 = async () => await lokacijaService.GetOne(voznja.krajnja_lokacija_id);
-
   const fetchJezik = async () => await jezikService.GetOne(voznja.trazeni_jezik_id!);
 
 
-
-
-
+  const [lokacijaDisplay, setLokacijaDisplay] = useState<Lokacija | null>(null);
+  const [voziloDisplay, setVoziloDisplay] = useState<Vozilo | null>(null);
+  const [vozacDisplay, setVozacDisplay] = useState<Vozac | null>(null);
 
   return (
-      <div className="card my-3 shadow-sm">
+    <>
+      {lokacijaDisplay && (
+        <PopUpWindow onClose={() => setLokacijaDisplay(null)} title="Lokacija">
+          <LokacijaOverview lokacija={lokacijaDisplay}/>
+        </PopUpWindow>
+      )}
+
+      {voziloDisplay && (
+        <PopUpWindow onClose={() => setVoziloDisplay(null)} title="Vozilo">
+          <VoziloDetails vozilo={voziloDisplay}/>
+        </PopUpWindow>
+      )}
+
+      {vozacDisplay && (
+        <PopUpWindow onClose={() => setVozacDisplay(null)} title="Vozač">
+          <VozacDetails vozac={vozacDisplay}/>
+        </PopUpWindow>
+      )}
+
+      <div className="card my-3 shadow-sm fs-5">
+
         <div className="card-header bg-success text-white">
           Detalji vožnje #{voznja.id}
         </div>
         <div className="card-body">
-          <div>
+          <CardListItem>
             <strong>Vreme: </strong> {format(new Date(voznja.vreme_pocetka), 'hh:mm')}
-          </div>
+          </CardListItem>
 
-          <div>
-            <strong>Vozac: </strong>
+          <CardListItem>
+            <strong>Vozač: </strong>
             <LoadAsync<Vozac> inline={true} loadModel={fetchVozac} render={(vozac) => (
-                <>
-                  {`${vozac.ime} ${vozac.prezime}`}
-                </>
+              <div onClick={() => setVozacDisplay(vozac)} className="stw-link">
+                {`${vozac.ime} ${vozac.prezime}`}
+              </div>
             )}/>
-          </div>
+          </CardListItem>
 
-          <div>
+          <CardListItem>
             <strong>Vozilo: </strong>
             <LoadAsync<Vozilo> inline={true} loadModel={fetchVozilo} render={(vozilo) => (
-                <>
-                  {`${vozilo.registracija} ${vozilo.marka} ${vozilo.model}`}
-                </>
-            )}/>
-          </div>
-
-
-          <div>
-            <strong>Status: </strong> {MapStatusToName(voznja.status_voznje)}
-          </div>
-
-          <div>
-            <strong>Pocetna lokacija: </strong>
-            <LoadAsync<Lokacija> inline={true} loadModel={fetchLokacija1} render={(pocetnaLokacija) => (
-                <>
-                  {pocetnaLokacija.adresa ? pocetnaLokacija.adresa : pocetnaLokacija.naziv}
-                </>
-            )}/>
-          </div>
-
-          <div>
-            <strong>Zavrsna lokacija: </strong>
-            <LoadAsync<Lokacija> inline={true} loadModel={fetchLokacija2} render={(krajnjaLokacija) => (
-                <>
-                  {krajnjaLokacija.adresa ? krajnjaLokacija.adresa : krajnjaLokacija.naziv}
-                </>
-            )}/>
-          </div>
-          {voznja.ocekivano_vreme_dolaska && (
-              <div>
-                <strong>Ocekivano vreme dolaska: </strong>{format(new Date(voznja.ocekivano_vreme_dolaska), 'hh:mm')}
+              <div onClick={() => setVoziloDisplay(vozilo)} className="stw-link">
+                {`${vozilo.registracija} ${vozilo.marka} ${vozilo.model}`}
               </div>
+            )}/>
+          </CardListItem>
+
+
+          <CardListItem>
+            <strong>Status: </strong> {MapStatusToName(voznja.status_voznje)}
+          </CardListItem>
+
+          <CardListItem>
+            <strong>Početna lokacija: </strong>
+            <LoadAsync<Lokacija> inline={true} loadModel={fetchLokacija1} render={(pocetnaLokacija) => (
+              <div onClick={() => setLokacijaDisplay(pocetnaLokacija)} className="stw-link">
+                {pocetnaLokacija.naziv ? pocetnaLokacija.naziv : pocetnaLokacija.adresa}
+              </div>
+            )}/>
+          </CardListItem>
+
+          <CardListItem>
+            <strong>Završna lokacija: </strong>
+            <LoadAsync<Lokacija> inline={true} loadModel={fetchLokacija2} render={(krajnjaLokacija) => (
+              <div onClick={() => setLokacijaDisplay(krajnjaLokacija)} className="stw-link">
+                {krajnjaLokacija.naziv ? krajnjaLokacija.naziv : krajnjaLokacija.adresa}
+              </div>
+            )}/>
+          </CardListItem>
+          {voznja.ocekivano_vreme_dolaska && (
+            <CardListItem>
+              <strong>Očekivano vreme dolaska: </strong>{format(new Date(voznja.ocekivano_vreme_dolaska), 'hh:mm')}
+            </CardListItem>
           )}
           {voznja.cena && (
-              <div>
-                <strong>Cena: </strong>{voznja.cena}
-              </div>
+            <CardListItem>
+              <strong>Cena: </strong>{voznja.cena} RSD
+            </CardListItem>
           )}
           {voznja.nacin_placanja && (
-              <div>
-                <strong>Nacin placanja: </strong>{voznja.nacin_placanja}
-              </div>
+            <CardListItem>
+              <strong>Način placanja: </strong>{voznja.nacin_placanja}
+            </CardListItem>
           )}
           {voznja.trazeni_jezik_id && (
-              <div>
-                <strong>Trazeni jezik: </strong>
-                <LoadAsync<Jezik> inline={true} loadModel={fetchJezik} render={(jezik) => (
-                    <>
-                      {jezik.ime}
-                    </>
-                )}/>
-              </div>
+            <CardListItem>
+              <strong>Traženi jezik: </strong>
+              <LoadAsync<Jezik> inline={true} loadModel={fetchJezik} render={(jezik) => (
+                <>
+                  {nazivJezikaNaSrpskom(jezik.ime)}
+                </>
+              )}/>
+            </CardListItem>
           )}
           {voznja.broj_leta && (
-              <div>
-                <strong>Broj leta: </strong>{voznja.broj_leta}
-              </div>
+            <CardListItem>
+              <strong>Broj leta: </strong>{voznja.broj_leta}
+            </CardListItem>
           )}
-          <div>
+          <CardListItem>
             <strong>Povratak: </strong>{voznja.povratak ? "Da":"Ne"}
-          </div>
+          </CardListItem>
           {voznja.cekanje && (
-              <div>
-                <strong>Cekanje: </strong>{voznja.cekanje}
-              </div>
+            <CardListItem>
+              <strong>Čekanje: </strong>{voznja.cekanje}h
+            </CardListItem>
           )}
           {voznja.napomena && (
-              <div>
-                <strong>Napomena: </strong>{voznja.napomena}
-              </div>
+            <CardListItem>
+              <strong>Napomena: </strong>{voznja.napomena}
+            </CardListItem>
           )}
           {voznja.recenzija && (
-              <div>
-                <strong>Recenzija: </strong>{voznja.recenzija}
-              </div>
+            <CardListItem>
+              <strong>Recenzija: </strong>{voznja.recenzija}
+            </CardListItem>
           )}
 
         </div>
 
       </div>
+    </>
   );
 }
 
