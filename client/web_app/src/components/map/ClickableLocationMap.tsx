@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import { useState, useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
+import {MapCenterer} from "./MapCenterer.tsx";
 
 type LocationMapProps = {
     lat: number;
@@ -33,7 +34,7 @@ export default function ClickableLocationMap({ lat, lng, onSelect }: LocationMap
 
     return (
         <MapContainer
-            center={[markerPos.lat, markerPos.lng]}
+            center={[lat, lng]}
             zoom={13}
             scrollWheelZoom={true}
             style={{ height: '400px', width: '100%' }}
@@ -42,6 +43,8 @@ export default function ClickableLocationMap({ lat, lng, onSelect }: LocationMap
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+
+            <MapCenterer lat={markerPos.lat} lng={markerPos.lng} />
             <ClickableMap onSelect={handleSelect} />
             <Marker position={[markerPos.lat, markerPos.lng]}>
                 <Popup>

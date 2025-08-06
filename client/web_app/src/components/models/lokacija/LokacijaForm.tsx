@@ -2,28 +2,35 @@ import React, { useState } from "react";
 import type { Lokacija } from "../../../types";
 import {getLatLonFromAddress} from "../../../services/LokacijaService.ts";
 import ClickableLocationMap from "../../map/ClickableLocationMap.tsx";
+import {LoadingSpinnerInline} from "../../common/Loading.tsx";
 
 type LokacijaFormProps = {
-    onCreate: (nova: Lokacija) => void;
+    onCreate: (nova: Lokacija) => Promise<void>;
 };
 
 export default function LokacijaForm({ onCreate }: LokacijaFormProps) {
     const [naziv, setNaziv] = useState("");
     const [adresa, setAdresa] = useState("");
-    const [lat, setLat] = useState(44.7866); // Beograd centar default
-    const [lng, setLng] = useState(20.4489);
-    const [greska, setGreska] = useState("");
+    const [lat, setLat] = useState(43.3209); // Nis default
+    const [lng, setLng] = useState(21.8958);
+
+    const [loadingSubmit, setLoadingSubmit] = useState(false);
+    const [loadingSearch, setLoadingSearch] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSearch = async () => {
+        setLoadingSearch(true);
+        setError(null);
         try {
             const { latitude, longitude } = await getLatLonFromAddress(adresa);
             console.log(latitude, longitude);
             setLat(latitude);
             setLng(longitude);
-            setGreska("");
         } catch (error) {
-            setGreska("Greška pri pretrazi adrese.");
+            setError("Greška pri pretrazi adrese.");
             console.error(error);
+        } finally {
+            setLoadingSearch(false);
         }
     };
 
@@ -32,11 +39,8 @@ export default function LokacijaForm({ onCreate }: LokacijaFormProps) {
         setLng(lng);
     };
 
-    const handleSubmit = () => {
-        if (!naziv || !adresa) {
-            setGreska("Naziv i adresa su obavezni.");
-            return;
-        }
+    const handleSubmit = async () => {
+
 
         const novaLokacija: Lokacija = {
             id: 0, // backend će dodeliti ID
@@ -46,37 +50,66 @@ export default function LokacijaForm({ onCreate }: LokacijaFormProps) {
             longituda:lng,
         };
 
-        onCreate(novaLokacija);
+        try{
+            setLoadingSubmit(true);
+            setError(null);
+            await onCreate(novaLokacija);
+        }
+        catch (err) {
+            setError("Greška prilikom kreiranja lokacije.");
+        } finally {
+            setLoadingSubmit(false);
+        }
     };
 
     return (
-        <div>
-            <h2>Dodaj novu lokaciju</h2>
+      <div className="container">
+          <div className="mb-3">
+              <label className="form-label">Naziv:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={naziv}
+                onChange={(e) => setNaziv(e.target.value)}
+              />
+          </div>
 
-            <div>
-                <label>Naziv:</label>
-                <input
-                    type="text"
-                    value={naziv}
-                    onChange={(e) => setNaziv(e.target.value)}
-                />
-            </div>
+          <div className="mb-3 row align-items-center">
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <label>Adresa:</label>
-                <input
+              <label className="form-label">Adresa:</label>
+
+              <div className="col">
+                  <input
                     type="text"
+                    className="form-control"
                     value={adresa}
                     onChange={(e) => setAdresa(e.target.value)}
-                />
-                <button onClick={handleSearch}>Pretraži</button>
-            </div>
+                  />
+              </div>
+              <div className="col-auto">
+                  <button
+                    className="btn btn-outline-primary"
+                    onClick={handleSearch}
+                    disabled={loadingSearch}
+                  >
+                      {loadingSearch ? <LoadingSpinnerInline /> : "Pretraži"}
+                  </button>
+              </div>
+          </div>
 
-            {greska && <p style={{ color: "red" }}>{greska}</p>}
+          {error && <div className="alert alert-danger">{error}</div>}
 
-            <ClickableLocationMap lat={lat} lng={lng} onSelect={handleMapClick} />
+          <div className="mb-4">
+              <ClickableLocationMap lat={lat} lng={lng} onSelect={handleMapClick} />
+          </div>
 
-            <button onClick={handleSubmit}>Sačuvaj lokaciju</button>
-        </div>
+          <button
+            className="btn btn-success"
+            onClick={handleSubmit}
+            disabled={loadingSubmit}
+          >
+              {loadingSubmit ? <LoadingSpinnerInline /> : "Sačuvaj lokaciju"}
+          </button>
+      </div>
     );
 }

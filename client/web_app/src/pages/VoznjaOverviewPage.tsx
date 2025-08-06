@@ -41,7 +41,7 @@ function VoznjaOverviewPage() {
       {loading && (<LoadingSpinner/>)}
       {error && (<div className="alert alert-danger">{error}</div>)}
       {voznja && (
-        <VoznjaOverview voznja={voznja}/>
+        <VoznjaOverview voznja={voznja} refresh={() => loadVoznja()}/>
       )}
     </div>
   );

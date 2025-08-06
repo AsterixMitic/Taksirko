@@ -10,13 +10,17 @@ import VoziloDetails from "../vozilo/VoziloDetails.tsx";
 import VozacDetails from "../vozac/VozacDetails.tsx";
 import CardListItem from "../../common/CardListItem.tsx";
 import {nazivJezikaNaSrpskom} from "../../../services/JezikService.ts";
+import {EditableField} from "../../common/EditableField.tsx";
 
 interface Props{
   voznja: Voznja
+  refresh: () => void
 }
 
 
-function VoznjaOverview({voznja}: Props) {
+function VoznjaOverview({voznja, refresh}: Props) {
+
+  const voznjaService=CrudFactory.GetVoznjeService();
 
   const vozacService=CrudFactory.GetVozaciService()
   const voziloService=CrudFactory.GetVozilaService()
@@ -131,25 +135,76 @@ function VoznjaOverview({voznja}: Props) {
           )}
           {voznja.broj_leta && (
             <CardListItem>
-              <strong>Broj leta: </strong>{voznja.broj_leta}
+              <strong>Broj leta: </strong>
+              <EditableField
+                type="text"
+                value={voznja.broj_leta}
+                renderValue={(br_leta) => (
+                  br_leta
+                )}
+                saveAsync={async (n_br_leta) => {
+                  await voznjaService.Patch(voznja.id, {broj_leta: n_br_leta});
+                  refresh();
+                }}/>
             </CardListItem>
           )}
           <CardListItem>
-            <strong>Povratak: </strong>{voznja.povratak ? "Da":"Ne"}
+            <strong>Povratak: </strong>
+            <EditableField
+              type="checkbox"
+              value={voznja.povratak}
+              renderValue={(povratak) => (
+                povratak ? 'Da' : 'Ne'
+              )}
+              saveAsync={async (n_povratak) => {
+                await voznjaService.Patch(voznja.id, {povratak: n_povratak});
+                refresh();
+              }}
+              />
           </CardListItem>
           {voznja.cekanje && (
             <CardListItem>
-              <strong>Čekanje: </strong>{voznja.cekanje}h
+              <strong>Čekanje: </strong>
+              <EditableField
+                type="number"
+                value={voznja.cekanje}
+                renderValue={(cekanje) => (`${cekanje}h`)}
+                saveAsync={async (n_cekanje) => {
+                  await voznjaService.Patch(voznja.id, {cekanje: n_cekanje});
+                  refresh()
+                }}/>
             </CardListItem>
           )}
           {voznja.napomena && (
             <CardListItem>
-              <strong>Napomena: </strong>{voznja.napomena}
+              <strong>Napomena: </strong>
+              <EditableField
+                type="text"
+                value={voznja.napomena}
+                renderValue={(napomena) => (
+                  napomena
+                )}
+                saveAsync={async (n_napomena) => {
+                  await voznjaService.Patch(voznja.id, {napomena: n_napomena});
+                  refresh();
+                }}
+                />
             </CardListItem>
           )}
           {voznja.recenzija && (
             <CardListItem>
-              <strong>Recenzija: </strong>{voznja.recenzija}
+              <strong>Recenzija: </strong>
+              <EditableField
+                type="text"
+                value={voznja.recenzija}
+                renderValue={(recenzija) => (
+                  recenzija
+                )}
+                saveAsync={async (n_recenzija) => {
+                  await voznjaService.Patch(voznja.id, {recenzija: n_recenzija});
+                  refresh();
+                }}
+                />
             </CardListItem>
           )}
 

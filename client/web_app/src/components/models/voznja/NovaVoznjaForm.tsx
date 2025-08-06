@@ -74,12 +74,14 @@ function NovaVoznjaForm() {
                 novaLokacija && (
                     <PopUpWindow onClose={() => setNovaLokacija(false)} title="Nova lokacija">
                         <LokacijaForm
-                            onCreate={(nova) => {
-                                setLokacije((prev) => [...prev, nova]);
+                            onCreate={async (nova) => {
+                                const lokacijaCrud = CrudFactory.GetLokacijeService();
+                                const novaLok = await lokacijaCrud.Create(nova);
+                                setLokacije((prev) => [...prev, novaLok]);
                                 setFormData((prev) => ({
                                     ...prev,
-                                    pocetna_lokacija_id: nova.id,
-                                    pocetna_lokacija_naziv: nova.naziv || nova.adresa
+                                    pocetna_lokacija_id: novaLok.id,
+                                    pocetna_lokacija_naziv: novaLok.naziv || novaLok.adresa
                                 }));
                                 setNovaLokacija(false);
                             }}

@@ -35,6 +35,9 @@ export default class CrudService<Model> {
   public async Delete(id: number): Promise<void> {
     return ApiService.delete(`${this.endpoint}/${id}`);
   }
+  public async Patch(id: number, data: any): Promise<Model> {
+    return ApiService.patch<Model>(`${this.endpoint}/${id}`, data);
+  }
 }
 
 export class CrudFactory {
