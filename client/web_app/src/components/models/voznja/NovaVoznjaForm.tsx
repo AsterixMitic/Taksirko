@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { CrudFactory } from "../../../services/data/CrudService.ts";
 import { useNavigate } from "react-router-dom";
 import type { Jezik, Lokacija, Vozac, Vozilo, Voznja } from "../../../types.ts";
-import {nazivJezikaNaSrpskom} from "../../../services/JezikService.ts";
+import { nazivJezikaNaSrpskom } from "../../../services/JezikService.ts";
 import LoadingSpinner from "../../common/Loading.tsx";
 
 function NovaVoznjaForm() {
-    const [formData, setFormData] = useState<Partial<Voznja>>({});
+    const [formData, setFormData] = useState<Partial<Voznja> & {
+        pocetna_lokacija_naziv?: string;
+        krajnja_lokacija_naziv?: string;
+    }>({});
+
     const navigate = useNavigate();
 
     const vozacService = CrudFactory.GetVozaciService();
@@ -91,23 +95,71 @@ function NovaVoznjaForm() {
 
                 <div className="mb-3">
                     <label className="form-label">Početna lokacija</label>
-                    <select name="pocetna_lokacija_id" onChange={handleChange} className="form-select">
-                        <option value="">Izaberi</option>
-                        {lokacije.map(l => (
-                            <option key={l.id} value={l.id}>{l.naziv || l.adresa}</option>
-                        ))}
-                    </select>
+                    <div className="row g-2">
+                        <div className="col-9">
+                            <input
+                                type="text"
+                                list="pocetne-lokacije"
+                                className="form-control"
+                                value={formData.pocetna_lokacija_naziv || ""}
+                                onChange={(e) => {
+                                    const naziv = e.target.value;
+                                    const lok = lokacije.find(l => (l.naziv || l.adresa) === naziv);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        pocetna_lokacija_id: lok?.id || undefined,
+                                        pocetna_lokacija_naziv: naziv
+                                    }));
+                                }}
+                            />
+                            <datalist id="pocetne-lokacije">
+                                {lokacije.map(l => (
+                                    <option key={l.id} value={l.naziv || l.adresa} />
+                                ))}
+                            </datalist>
+                        </div>
+                        <div className="col-3">
+                            <button type="button" className="btn btn-outline-secondary w-100">
+                                Dodaj novu
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
 
                 <div className="mb-3">
                     <label className="form-label">Krajnja lokacija</label>
-                    <select name="krajnja_lokacija_id" onChange={handleChange} className="form-select">
-                        <option value="">Izaberi</option>
-                        {lokacije.map(l => (
-                            <option key={l.id} value={l.id}>{l.naziv || l.adresa}</option>
-                        ))}
-                    </select>
+                    <div className="row g-2">
+                        <div className="col-9">
+                            <input
+                                type="text"
+                                list="krajnje-lokacije"
+                                className="form-control"
+                                value={formData.krajnja_lokacija_naziv || ""}
+                                onChange={(e) => {
+                                    const naziv = e.target.value;
+                                    const lok = lokacije.find(l => (l.naziv || l.adresa) === naziv);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        krajnja_lokacija_id: lok?.id || undefined,
+                                        krajnja_lokacija_naziv: naziv
+                                    }));
+                                }}
+                            />
+                            <datalist id="krajnje-lokacije">
+                                {lokacije.map(l => (
+                                    <option key={l.id} value={l.naziv || l.adresa} />
+                                ))}
+                            </datalist>
+                        </div>
+                        <div className="col-3">
+                            <button type="button" className="btn btn-outline-secondary w-100">
+                                Dodaj novu
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
 
                 <div className="mb-3">
                     <label className="form-label">Traženi jezik</label>
@@ -139,10 +191,12 @@ function NovaVoznjaForm() {
                     <label className="form-check-label" htmlFor="povratakCheck">Povratak</label>
                 </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Čekanje (h)</label>
-                    <input type="number" name="cekanje" onChange={handleChange} className="form-control" />
-                </div>
+                {formData.povratak && (
+                    <div className="mb-3">
+                        <label className="form-label">Čekanje (h)</label>
+                        <input type="number" name="cekanje" onChange={handleChange} className="form-control" />
+                    </div>
+                )}
 
                 <div className="mb-3">
                     <label className="form-label">Napomena</label>
