@@ -3,6 +3,7 @@ import { CrudFactory } from "../../../services/data/CrudService.ts";
 import { useNavigate } from "react-router-dom";
 import type { Jezik, Lokacija, Vozac, Vozilo, Voznja } from "../../../types.ts";
 import {nazivJezikaNaSrpskom} from "../../../services/JezikService.ts";
+import LoadingSpinner from "../../common/Loading.tsx";
 
 function NovaVoznjaForm() {
     const [formData, setFormData] = useState<Partial<Voznja>>({});
@@ -26,6 +27,9 @@ function NovaVoznjaForm() {
         jezikService.GetAll().then(setJezici);
     }, []);
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         const updatedValue = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
@@ -38,6 +42,8 @@ function NovaVoznjaForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        setError(null);
         try {
             setFormData(prev => ({
                 ...prev,
@@ -46,7 +52,10 @@ function NovaVoznjaForm() {
             const created = await voznjaService.Create(formData as Voznja);
             navigate(`/voznje/${created.id}`);
         } catch (error) {
+            setError("Greška pri dodavanju vožnje");
             console.error("Greška prilikom kreiranja vožnje:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -140,7 +149,12 @@ function NovaVoznjaForm() {
                     <textarea name="napomena" onChange={handleChange} className="form-control" rows={3}></textarea>
                 </div>
 
-                <button type="submit" className="btn btn-primary">Sačuvaj</button>
+                {error && <div className="alert alert-danger">{error}</div> }
+
+                <button type="submit" className="btn btn-primary"
+                        disabled={loading}>
+                    {loading ? <LoadingSpinner/> : ("Sačuvaj")}
+                </button>
             </form>
         </div>
     );
