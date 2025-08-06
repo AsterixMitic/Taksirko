@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import type { Jezik, Lokacija, Vozac, Vozilo, Voznja } from "../../../types.ts";
 import { nazivJezikaNaSrpskom } from "../../../services/JezikService.ts";
 import LoadingSpinner from "../../common/Loading.tsx";
+import PopUpWindow from "../../common/PopUpWindow.tsx";
+import LokacijaForm from "../lokacija/LokacijaForm.tsx";
 
 function NovaVoznjaForm() {
     const [formData, setFormData] = useState<Partial<Voznja> & {
@@ -33,6 +35,8 @@ function NovaVoznjaForm() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [novaLokacija, setNovaLokacija] = useState<boolean>(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -65,6 +69,25 @@ function NovaVoznjaForm() {
 
     return (
         <div className="container my-4">
+
+            {
+                novaLokacija && (
+                    <PopUpWindow onClose={() => setNovaLokacija(false)} title="Nova lokacija">
+                        <LokacijaForm
+                            onCreate={(nova) => {
+                                setLokacije((prev) => [...prev, nova]);
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    pocetna_lokacija_id: nova.id,
+                                    pocetna_lokacija_naziv: nova.naziv || nova.adresa
+                                }));
+                                setNovaLokacija(false);
+                            }}
+                        />
+                    </PopUpWindow>
+                )
+            }
+
             <form onSubmit={handleSubmit} className="card p-4 shadow-sm">
                 <h4 className="mb-4">Dodaj novu vožnju</h4>
 
@@ -119,7 +142,7 @@ function NovaVoznjaForm() {
                             </datalist>
                         </div>
                         <div className="col-3">
-                            <button type="button" className="btn btn-outline-secondary w-100">
+                            <button type="button" className="btn btn-outline-secondary w-100" onClick={()=>setNovaLokacija(true)}>
                                 Dodaj novu
                             </button>
                         </div>
@@ -153,7 +176,7 @@ function NovaVoznjaForm() {
                             </datalist>
                         </div>
                         <div className="col-3">
-                            <button type="button" className="btn btn-outline-secondary w-100">
+                            <button type="button" className="btn btn-outline-secondary w-100" onClick={()=>setNovaLokacija(true)}>
                                 Dodaj novu
                             </button>
                         </div>
