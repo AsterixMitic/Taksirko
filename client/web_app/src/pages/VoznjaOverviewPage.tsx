@@ -1,9 +1,9 @@
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import type { Voznja } from "../types";
-import CrudService, {CrudFactory} from "../services/data/CrudService.ts";
 import LoadingSpinner from "../components/common/Loading.tsx";
 import VoznjaOverview from "../components/models/voznja/VoznjaOverview.tsx";
+import {CrudFactory} from "../services/data/CrudService.ts";
 
 function VoznjaOverviewPage() {
   const { voznja_id } = useParams<{ voznja_id: string }>();
@@ -37,13 +37,13 @@ function VoznjaOverviewPage() {
   }, []);
 
   return (
-    <div className="container mt-3" style={{maxWidth: "800px"}}>
-      {loading && (<LoadingSpinner/>)}
-      {error && (<div className="alert alert-danger">{error}</div>)}
-      {voznja && (
-        <VoznjaOverview voznja={voznja} refresh={() => loadVoznja()}/>
-      )}
-    </div>
+      <div className="container mt-3" style={{maxWidth: "800px"}}>
+        {loading && (<LoadingSpinner/>)}
+        {error && (<div className="alert alert-danger">{error}</div>)}
+        {voznja && (
+            <VoznjaOverview voznja={voznja} refresh={() => loadVoznja()}/>
+        )}
+      </div>
   );
 }
 

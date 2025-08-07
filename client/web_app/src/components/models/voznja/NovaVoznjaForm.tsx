@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { CrudFactory } from "../../../services/data/CrudService.ts";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { Jezik, Lokacija, Vozac, Vozilo, Voznja } from "../../../types.ts";
 import { nazivJezikaNaSrpskom } from "../../../services/JezikService.ts";
 import LoadingSpinner from "../../common/Loading.tsx";
 import PopUpWindow from "../../common/PopUpWindow.tsx";
 import LokacijaForm from "../lokacija/LokacijaForm.tsx";
+import {validateVoznja} from "../../validation/validation.ts";
 
 function NovaVoznjaForm() {
+
+    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
     const [formData, setFormData] = useState<Partial<Voznja> & {
         pocetna_lokacija_naziv?: string;
         krajnja_lokacija_naziv?: string;
@@ -26,12 +30,32 @@ function NovaVoznjaForm() {
     const [lokacije, setLokacije] = useState<Lokacija[]>([]);
     const [jezici, setJezici] = useState<Jezik[]>([]);
 
+    const [searchParams] = useSearchParams();
+
     useEffect(() => {
         vozacService.GetAll().then(setVozaci);
         voziloService.GetAll().then(setVozila);
         lokacijaService.GetAll().then(setLokacije);
         jezikService.GetAll().then(setJezici);
     }, []);
+
+    // Automatski popuni vreme_pocetka iz query parametra "datum" (format: yyyy-MM-dd)
+    useEffect(() => {
+        const datumParam = searchParams.get("datum");
+        if (datumParam) {
+            const datum = new Date(datumParam);
+            if (!isNaN(datum.getTime())) {
+                // Za input type="datetime-local" format: "YYYY-MM-DDTHH:mm"
+                // Pošto datumParam može biti samo datum bez vremena, dodajemo podrazumevano vreme 08:00
+                datum.setHours(8, 0, 0, 0);
+                const localISO = datum.toISOString().slice(0, 16);
+                setFormData(prev => ({
+                    ...prev,
+                    vreme_pocetka: localISO
+                }));
+            }
+        }
+    }, [searchParams]);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -50,18 +74,24 @@ function NovaVoznjaForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const errors = validateVoznja(formData);
+        setFieldErrors(errors);
+
+        if (Object.keys(errors).length > 0) {
+            return; // ima grešaka, ne nastavljamo
+        }
+
         setLoading(true);
         setError(null);
         try {
-            setFormData(prev => ({
-                ...prev,
-                id: 0
-            }));
             const created = await voznjaService.Create(formData as Voznja);
-            navigate(`/voznje/${created.id}`);
+            const datum = new Date(formData.vreme_pocetka!).toISOString().split("T")[0];
+            navigate(`/dispecer/day/${datum}`);
         } catch (error) {
             setError("Greška pri dodavanju vožnje");
             console.error("Greška prilikom kreiranja vožnje:", error);
+            console.log("Postavljena greška:", "Greška pri dodavanju vožnje");
         } finally {
             setLoading(false);
         }
@@ -70,52 +100,64 @@ function NovaVoznjaForm() {
     return (
         <div className="container my-4">
 
-            {
-                novaLokacija && (
-                    <PopUpWindow onClose={() => setNovaLokacija(false)} title="Nova lokacija">
-                        <LokacijaForm
-                            onCreate={async (nova) => {
-                                const lokacijaCrud = CrudFactory.GetLokacijeService();
-                                const novaLok = await lokacijaCrud.Create(nova);
-                                setLokacije((prev) => [...prev, novaLok]);
-                                setFormData((prev) => ({
-                                    ...prev,
-                                    pocetna_lokacija_id: novaLok.id,
-                                    pocetna_lokacija_naziv: novaLok.naziv || novaLok.adresa
-                                }));
-                                setNovaLokacija(false);
-                            }}
-                        />
-                    </PopUpWindow>
-                )
-            }
+            {novaLokacija && (
+                <PopUpWindow onClose={() => setNovaLokacija(false)} title="Nova lokacija">
+                    <LokacijaForm
+                        onCreate={async (nova) => {
+                            const lokacijaCrud = CrudFactory.GetLokacijeService();
+                            const novaLok = await lokacijaCrud.Create(nova);
+                            setLokacije((prev) => [...prev, novaLok]);
+                            setFormData((prev) => ({
+                                ...prev,
+                                pocetna_lokacija_id: novaLok.id,
+                                pocetna_lokacija_naziv: novaLok.naziv || novaLok.adresa
+                            }));
+                            setNovaLokacija(false);
+                        }}
+                    />
+                </PopUpWindow>
+            )}
 
             <form onSubmit={handleSubmit} className="card p-4 shadow-sm">
                 <h4 className="mb-4">Dodaj novu vožnju</h4>
 
                 <div className="mb-3">
                     <label className="form-label">Vreme početka</label>
-                    <input type="datetime-local" name="vreme_pocetka" onChange={handleChange} className="form-control" />
+                    <input
+                        type="datetime-local"
+                        name="vreme_pocetka"
+                        value={formData.vreme_pocetka || ""}
+                        onChange={handleChange}
+                        className={`form-control ${fieldErrors.vreme_pocetka ? "is-invalid" : ""}`}
+                    />
+                    {fieldErrors.vreme_pocetka && <div className="invalid-feedback">{fieldErrors.vreme_pocetka}</div>}
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Vozilo</label>
-                    <select name="vozilo_id" onChange={handleChange} className="form-select">
+                    <select name="vozilo_id" onChange={handleChange} className={`form-select ${fieldErrors.vozilo_id ? 'is-invalid' : ''}`}>
                         <option value="">Izaberi vozilo</option>
                         {vozila.map(v => (
-                            <option key={v.id} value={v.id}>Br. {v.redni_broj} - {v.registracija} - {v.marka} {v.model}</option>
+                            <option key={v.id} value={v.id}>
+                                Br. {v.redni_broj} - {v.registracija} - {v.marka} {v.model}
+                            </option>
                         ))}
                     </select>
+                    {fieldErrors.vozilo_id && <div className="invalid-feedback">{fieldErrors.vozilo_id}</div>}
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Vozač</label>
-                    <select name="vozac_id" onChange={handleChange} className="form-select">
+                    <select name="vozac_id" onChange={handleChange} className={`form-select ${fieldErrors.vozac_id ? 'is-invalid' : ''}`}>
                         <option value="">Izaberi vozača</option>
                         {vozaci.map(v => (
-                            <option key={v.id} value={v.id}>{v.ime} {v.prezime}</option>
+                            <option key={v.id} value={v.id}>
+                                {v.ime} {v.prezime}
+                            </option>
                         ))}
                     </select>
+                    {fieldErrors.vozac_id && <div className="invalid-feedback">{fieldErrors.vozac_id}</div>}
+
                 </div>
 
                 <div className="mb-3">
@@ -125,7 +167,7 @@ function NovaVoznjaForm() {
                             <input
                                 type="text"
                                 list="pocetne-lokacije"
-                                className="form-control"
+                                className={`form-control ${fieldErrors.pocetna_lokacija_naziv ? 'is-invalid' : ''}`}
                                 value={formData.pocetna_lokacija_naziv || ""}
                                 onChange={(e) => {
                                     const naziv = e.target.value;
@@ -137,6 +179,8 @@ function NovaVoznjaForm() {
                                     }));
                                 }}
                             />
+                            {fieldErrors.pocetna_lokacija_naziv && <div className="invalid-feedback">{fieldErrors.pocetna_lokacija_naziv}</div>}
+
                             <datalist id="pocetne-lokacije">
                                 {lokacije.map(l => (
                                     <option key={l.id} value={l.naziv || l.adresa} />
@@ -144,13 +188,16 @@ function NovaVoznjaForm() {
                             </datalist>
                         </div>
                         <div className="col-3">
-                            <button type="button" className="btn btn-outline-secondary w-100" onClick={()=>setNovaLokacija(true)}>
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary w-100"
+                                onClick={() => setNovaLokacija(true)}
+                            >
                                 Dodaj novu
                             </button>
                         </div>
                     </div>
                 </div>
-
 
                 <div className="mb-3">
                     <label className="form-label">Krajnja lokacija</label>
@@ -159,7 +206,7 @@ function NovaVoznjaForm() {
                             <input
                                 type="text"
                                 list="krajnje-lokacije"
-                                className="form-control"
+                                className={`form-control ${fieldErrors.krajnja_lokacija_naziv ? 'is-invalid' : ''}`}
                                 value={formData.krajnja_lokacija_naziv || ""}
                                 onChange={(e) => {
                                     const naziv = e.target.value;
@@ -171,6 +218,8 @@ function NovaVoznjaForm() {
                                     }));
                                 }}
                             />
+                            {fieldErrors.krajnja_lokacija_naziv && <div className="invalid-feedback">{fieldErrors.krajnja_lokacija_naziv}</div>}
+
                             <datalist id="krajnje-lokacije">
                                 {lokacije.map(l => (
                                     <option key={l.id} value={l.naziv || l.adresa} />
@@ -178,20 +227,25 @@ function NovaVoznjaForm() {
                             </datalist>
                         </div>
                         <div className="col-3">
-                            <button type="button" className="btn btn-outline-secondary w-100" onClick={()=>setNovaLokacija(true)}>
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary w-100"
+                                onClick={() => setNovaLokacija(true)}
+                            >
                                 Dodaj novu
                             </button>
                         </div>
                     </div>
                 </div>
 
-
                 <div className="mb-3">
                     <label className="form-label">Traženi jezik</label>
                     <select name="trazeni_jezik_id" onChange={handleChange} className="form-select">
                         <option value="">Bez jezika</option>
                         {jezici.map(j => (
-                            <option key={j.id} value={j.id}>{nazivJezikaNaSrpskom(j.ime)}</option>
+                            <option key={j.id} value={j.id}>
+                                {nazivJezikaNaSrpskom(j.ime)}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -228,12 +282,10 @@ function NovaVoznjaForm() {
                     <textarea name="napomena" onChange={handleChange} className="form-control" rows={3}></textarea>
                 </div>
 
-                {error && <div className="alert alert-danger">{error}</div> }
-
-                <button type="submit" className="btn btn-primary"
-                        disabled={loading}>
-                    {loading ? <LoadingSpinner/> : ("Sačuvaj")}
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                    {loading ? <LoadingSpinner /> : "Sačuvaj"}
                 </button>
+                {error && <div className="alert alert-danger">{error}</div>}
             </form>
         </div>
     );

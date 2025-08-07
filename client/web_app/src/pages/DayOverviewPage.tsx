@@ -45,6 +45,11 @@ const DayOverviewPage = ({}: Props) => {
     return (
         <div className="container mt-5">
             <h2>Voznje za datum: {formatDate}</h2>
+            <div className="mb-3">
+                <button className="btn btn-primary" onClick={() => navigate(`/dispecer/nova_voznja?datum=${datum}`)}>
+                    Nova voznja
+                </button>
+            </div>
             <LoadAsync<Voznja[]> loadModel={loadVoznje} render={(voznje) => {
                 return (
                   <div className="d-flex flex-row flex-wrap">
